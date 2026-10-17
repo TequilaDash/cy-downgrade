@@ -3,9 +3,6 @@ name: Build Cyanide
 on:
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   build:
     name: Build iOS App
@@ -31,15 +28,9 @@ jobs:
       - name: Compile Cyanide (Unsigned)
         run: ./scripts/build.sh
 
-      # Artifact storage on this account is full, so the IPA goes to a Release
-      # instead — releases have their own quota and are directly downloadable.
-      - name: Publish IPA to Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          TAG="build-$(date -u +%Y%m%d-%H%M%S)"
-          gh release create "$TAG" build/Cyanide-*.ipa \
-            --title "Cyanide $TAG" \
-            --notes "Unsigned IPA built from ${GITHUB_SHA}." \
-            --latest
-          echo "release: $TAG"
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cyanide-TweakRunner
+          path: build/Cyanide.ipa
+          retention-days: 7

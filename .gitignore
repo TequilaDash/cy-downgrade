@@ -68,3 +68,6 @@ Cyanide/resident/output/*.thin
 
 ## Agent scratch (local memory / logs)
 /.workbuddy-ai/
+
+## Local write-ups (kept out of the public repo)
+/docs/
