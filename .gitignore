@@ -65,3 +65,6 @@ Cyanide/resident/output/*.thin
 
 ## Local analysis scratch (IPA dump, upstream copy, disassembly notes)
 /_work/
+
+## Agent scratch (local memory / logs)
+/.workbuddy-ai/
