@@ -101,3 +101,15 @@ CFString 常量布局（64 位）：`isa(8) | flags(8) | cstring*(8) | length(8)
 - [ ] 修改的文件 error 数与上游原文件一致
 - [ ] 用到的外部符号在上游源码里都存在（`grep` 到声明）
 - [ ] 无法验证的部分（编译、真机）在文档里明确写出来
+
+---
+
+## 7. 补充：往 GitHub 推 15MB 也要看代理脸色（同日实测）
+
+- 走 DevSidecar 代理（`http.proxy=127.0.0.1:31180`）：`git push` 12 分钟没推完 15.7MB，仓库端 `size` 一直是 0
+- 同一条网络 **直连**：`git -c http.proxy= -c https.proxy= push` → **25 秒**推完
+- 判断方法：`curl --noproxy '*' -o /dev/null -w "%{http_code} %{time_total}" https://github.com`
+  直连能通就别用代理；raw 下载单连接约 39-58KB/s，开 8~12 并发也提不上去（代理会串行化）
+- 大文件拿不下来时先问一句：**构建真的需要它吗**。这次 47MB 的 `libcrypto.a/libssl.a`
+  只被 ChOma 自己的测试目标引用，主工程在 `membershipExceptions` 里排除了它们，
+  XPF 的 Makefile 也是直接编译 `src/*.c`，不链接这两个库 —— 直接不推，CI 照样过
